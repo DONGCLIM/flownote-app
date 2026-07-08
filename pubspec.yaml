@@ -1,0 +1,77 @@
+name: flow_note
+description: FlowNote - 꽃 거래 장부 앱
+publish_to: 'none'
+version: 1.20260319.1340+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: 6.1.5+1
+
+  # Local storage
+  shared_preferences: 2.5.3
+  hive: 2.2.3
+  hive_flutter: 1.1.0
+
+  # Image picker (gallery)
+  image_picker: 1.1.2
+
+  # In-app camera (카메라 뷰 직접 제어)
+  camera: 0.11.1
+
+  # HTTP client (Gemini API 호출용)
+  http: 1.5.0
+
+  # Calendar UI
+  table_calendar: 3.1.2
+
+  # Intl / Date formatting
+  intl: 0.19.0
+
+  # UUID for unique IDs
+  uuid: 4.5.1
+
+  # Permission handler
+  permission_handler: 11.4.0
+
+  # Local push notifications (백그라운드 스캔 완료 알림)
+  flutter_local_notifications: 18.0.1
+
+  # EXIF rotation fix for receipt images
+  exif: 3.3.0
+
+  # Firebase
+  firebase_core: 3.6.0
+  cloud_firestore: 5.4.3
+  firebase_storage: 12.3.2
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+  # Dotted border for scan UI
+  dotted_border: 2.1.0
+
+  # Shimmer loading
+  shimmer: 3.0.0
+
+  # Flutter SVG
+  flutter_svg: 2.0.17
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  hive_generator: 2.0.1
+  build_runner: 2.4.13
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/icon/
