@@ -24,3 +24,9 @@ Thumbs.db
 
 # Keep lib/ directory for source code!
 
+
+# 민감한 파일 제외
+android/release-key.jks
+android/key.properties
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
