@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flora Scan</string>
+	<string>FlowNote</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>flora_scan</string>
+	<string>FlowNote</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>영수증 촬영을 위해 카메라 접근이 필요합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>갤러리에서 영수증 이미지를 가져오기 위해 사진 접근이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>영수증 이미지를 저장하기 위해 사진 접근이 필요합니다.</string>
 </dict>
 </plist>

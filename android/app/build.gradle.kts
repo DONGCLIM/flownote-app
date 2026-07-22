@@ -18,7 +18,7 @@ if (keyPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.florascan.scan"
+    namespace = "com.flownote.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.florascan.scan"
+        applicationId = "com.flownote.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

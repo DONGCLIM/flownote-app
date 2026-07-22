@@ -1,4 +1,4 @@
-package com.florascan.scan
+package com.flownote.app
 
 import io.flutter.embedding.android.FlutterActivity
 
