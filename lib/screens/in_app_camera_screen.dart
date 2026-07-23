@@ -61,19 +61,20 @@ class _InAppCameraScreenState extends State<InAppCameraScreen>
     try {
       // iOS 권한 확인 및 요청
       final status = await Permission.camera.status;
-      if (status.isDenied) {
+
+      if (status.isPermanentlyDenied) {
+        // 영구 거부 → 설정으로 이동 안내
+        if (mounted) _showPermissionDeniedDialog();
+        return;
+      }
+
+      if (status.isDenied || status.isRestricted || !status.isGranted) {
+        // notDetermined(최초) / denied / restricted → 권한 팝업 요청
         final result = await Permission.camera.request();
         if (!result.isGranted) {
-          if (mounted) {
-            _showPermissionDeniedDialog();
-          }
+          if (mounted) _showPermissionDeniedDialog();
           return;
         }
-      } else if (status.isPermanentlyDenied) {
-        if (mounted) {
-          _showPermissionDeniedDialog();
-        }
-        return;
       }
 
       _cameras = await availableCameras();

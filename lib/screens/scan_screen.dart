@@ -11,7 +11,6 @@ import '../services/training_data_service.dart';
 import '../models/receipt_model.dart';
 import 'receipt_edit_screen.dart';
 import 'gemini_key_screen.dart';
-import 'package:camera/camera.dart';
 import 'in_app_camera_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -63,17 +62,49 @@ class ScanScreenState extends State<ScanScreen>
   // 권한 요청
   // ──────────────────────────────────────────
   Future<bool> _requestCameraPermission() async {
-    // camera 패키지로 직접 권한 요청 (iOS 시스템 팝업 트리거)
-    try {
-      final cameras = await availableCameras();
-      if (cameras.isNotEmpty) return true;
-    } catch (e) {
-      // 권한 없으면 여기서 에러 발생
+    final status = await Permission.camera.status;
+
+    // 이미 허용됨
+    if (status.isGranted) return true;
+
+    // 영구 거부 → 바로 설정 다이얼로그로
+    if (status.isPermanentlyDenied) {
+      if (!mounted) return false;
+      await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.camera_alt, color: Colors.orange),
+              SizedBox(width: 8),
+              Text('카메라 권한 필요'),
+            ],
+          ),
+          content: const Text(
+            '영수증 촬영을 위해 카메라 접근 권한이 필요합니다.\n\n설정 > FlowNote > 카메라를 허용해 주세요.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('취소'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                openAppSettings();
+              },
+              child: const Text('설정으로 이동'),
+            ),
+          ],
+        ),
+      );
+      return false;
     }
 
-    // permission_handler로 재시도
-    var status = await Permission.camera.request();
-    if (status.isGranted) return true;
+    // notDetermined / denied → 시스템 권한 팝업 요청
+    final result = await Permission.camera.request();
+    if (result.isGranted) return true;
 
     // 그래도 안되면 설정으로 이동 다이얼로그
     if (!mounted) return false;
