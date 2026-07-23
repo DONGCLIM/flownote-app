@@ -86,8 +86,8 @@ class _GeminiKeyScreenState extends State<GeminiKeyScreen> {
       _showSnack('API 키를 입력해주세요.', isError: true);
       return;
     }
-    if (!key.startsWith('AIza')) {
-      _showSnack('올바른 Gemini API 키 형식이 아닙니다. (AIza로 시작해야 합니다)',
+    if (!key.startsWith('AIza') && !key.startsWith('AQ.')) {
+      _showSnack('올바른 Gemini API 키 형식이 아닙니다.',
           isError: true);
       return;
     }
