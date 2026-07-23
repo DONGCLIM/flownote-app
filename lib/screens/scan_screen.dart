@@ -11,6 +11,7 @@ import '../services/training_data_service.dart';
 import '../models/receipt_model.dart';
 import 'receipt_edit_screen.dart';
 import 'gemini_key_screen.dart';
+import 'package:camera/camera.dart';
 import 'in_app_camera_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -62,12 +63,19 @@ class ScanScreenState extends State<ScanScreen>
   // 권한 요청
   // ──────────────────────────────────────────
   Future<bool> _requestCameraPermission() async {
-    // 바로 권한 요청 (status 체크 없이 — iOS notDetermined 이슈 방지)
-    var status = await Permission.camera.request();
+    // camera 패키지로 직접 권한 요청 (iOS 시스템 팝업 트리거)
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isNotEmpty) return true;
+    } catch (e) {
+      // 권한 없으면 여기서 에러 발생
+    }
 
+    // permission_handler로 재시도
+    var status = await Permission.camera.request();
     if (status.isGranted) return true;
 
-    // 영구 거부 → 설정으로 이동 다이얼로그
+    // 그래도 안되면 설정으로 이동 다이얼로그
     if (!mounted) return false;
     await showDialog(
       context: context,
