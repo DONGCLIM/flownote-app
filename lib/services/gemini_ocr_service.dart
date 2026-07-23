@@ -14,7 +14,7 @@ class GeminiOcrService {
   // 컴파일 타임 기본 키 (빌드 환경에 주입된 경우)
   static const String _compiledKey = String.fromEnvironment(
     'GEMINI_API_KEY',
-    defaultValue: 'AIzaSyAEH59tMGvhNqNNfvu1n0uIwXE0IBJnhtQ',
+    defaultValue: '',
   );
 
   static const String _baseUrl =
