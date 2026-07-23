@@ -62,50 +62,43 @@ class ScanScreenState extends State<ScanScreen>
   // 권한 요청
   // ──────────────────────────────────────────
   Future<bool> _requestCameraPermission() async {
-    // 현재 상태 먼저 확인
-    var status = await Permission.camera.status;
+    // 바로 권한 요청 (status 체크 없이 — iOS notDetermined 이슈 방지)
+    var status = await Permission.camera.request();
 
-    // 아직 요청 안 한 상태 → 팝업 띄우기
     if (status.isGranted) return true;
 
-    // 영구 거부 상태 → 설정으로 이동 다이얼로그
-    if (status.isPermanentlyDenied) {
-      if (!mounted) return false;
-      await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
-            children: [
-              Icon(Icons.camera_alt, color: Colors.orange),
-              SizedBox(width: 8),
-              Text('카메라 권한 필요'),
-            ],
-          ),
-          content: const Text(
-            '영수증 촬영을 위해 카메라 접근 권한이 필요합니다.\n\n설정 > FlowNote > 카메라를 허용해 주세요.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('취소'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                openAppSettings();
-              },
-              child: const Text('설정으로 이동'),
-            ),
+    // 영구 거부 → 설정으로 이동 다이얼로그
+    if (!mounted) return false;
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.camera_alt, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('카메라 권한 필요'),
           ],
         ),
-      );
-      return false;
-    }
-
-    // 처음 요청 or 거부 → 권한 팝업 띄우기
-    status = await Permission.camera.request();
-    return status.isGranted;
+        content: const Text(
+          '영수증 촬영을 위해 카메라 접근 권한이 필요합니다.\n\n설정 > FlowNote > 카메라를 허용해 주세요.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('취소'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings();
+            },
+            child: const Text('설정으로 이동'),
+          ),
+        ],
+      ),
+    );
+    return false;
   }
 
   Future<void> _requestGalleryPermission() async {
