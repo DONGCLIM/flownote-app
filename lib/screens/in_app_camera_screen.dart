@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../theme/app_theme.dart';
 
 /// 앱 내 카메라 화면
@@ -58,6 +59,23 @@ class _InAppCameraScreenState extends State<InAppCameraScreen>
 
   Future<void> _initCamera({bool useFront = false}) async {
     try {
+      // iOS 권한 확인 및 요청
+      final status = await Permission.camera.status;
+      if (status.isDenied) {
+        final result = await Permission.camera.request();
+        if (!result.isGranted) {
+          if (mounted) {
+            _showPermissionDeniedDialog();
+          }
+          return;
+        }
+      } else if (status.isPermanentlyDenied) {
+        if (mounted) {
+          _showPermissionDeniedDialog();
+        }
+        return;
+      }
+
       _cameras = await availableCameras();
       if (_cameras.isEmpty) {
         if (mounted) {
@@ -220,6 +238,42 @@ class _InAppCameraScreenState extends State<InAppCameraScreen>
       SnackBar(
         content: Text(msg),
         backgroundColor: AppColors.error,
+      ),
+    );
+  }
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.camera_alt, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('카메라 권한 필요'),
+          ],
+        ),
+        content: const Text(
+          '영수증 촬영을 위해 카메라 접근 권한이 필요합니다.\n\n설정 > FlowNote > 카메라를 허용해 주세요.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pop(); // 카메라 화면 닫기
+            },
+            child: const Text('취소'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings(); // iOS 설정 앱으로 이동
+            },
+            child: const Text('설정으로 이동'),
+          ),
+        ],
       ),
     );
   }
