@@ -20,14 +20,16 @@ class AuthProvider extends ChangeNotifier {
     if (userData != null) {
       try {
         _currentUser = UserModel.fromMap(jsonDecode(userData) as Map<String, dynamic>);
-        // 사업장 정보가 비어있으면 테스트 정보 자동 입력
-        if (_currentUser != null && !_currentUser!.hasBusinessInfo) {
+        // 게스트 계정: 사업장 정보가 비어있으면 샘플 정보 자동 입력
+        if (_currentUser != null &&
+            _currentUser!.id == 'guest_user' &&
+            !_currentUser!.hasBusinessInfo) {
           _currentUser = _currentUser!.copyWith(
-            businessName: '플로라 꽃집',
-            businessNumber: '2024-03-18101',
-            ownerName: '이꽃님',
-            businessAddress: '서울시 송파구 잠실로 123, 1층',
-            phoneNumber: '02-9876-5432',
+            businessName: '꽃향기 플라워샵',
+            businessNumber: '123-45-67890',
+            ownerName: '김꽃순',
+            businessAddress: '서울시 마포구 합정동 123-4',
+            phoneNumber: '02-1234-5678',
             isUnlimited: true,
           );
           await prefs.setString('user_data', jsonEncode(_currentUser!.toMap()));
@@ -126,8 +128,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 테스트 계정으로 즉시 시작 - 회원가입 없이 앱 사용
-  /// SharedPreferences에 저장하지 않아서 앱 재시작 시 초기화됨
+  /// 게스트로 즉시 시작 - 회원가입 없이 앱 사용
+  /// SharedPreferences에 저장하여 앱 재시작 후에도 유지
   Future<void> signInAsGuest() async {
     _isLoading = true;
     _error = null;
@@ -135,6 +137,23 @@ class AuthProvider extends ChangeNotifier {
 
     await Future.delayed(const Duration(milliseconds: 300));
 
+    final prefs = await SharedPreferences.getInstance();
+
+    // 이미 저장된 게스트 데이터가 있으면 복원 (API 키 등 설정 유지)
+    final savedData = prefs.getString('user_data');
+    if (savedData != null) {
+      try {
+        final saved = UserModel.fromMap(jsonDecode(savedData) as Map<String, dynamic>);
+        if (saved.id == 'guest_user') {
+          _currentUser = saved;
+          _isLoading = false;
+          notifyListeners();
+          return;
+        }
+      } catch (_) {}
+    }
+
+    // 최초 게스트 로그인: 새 게스트 계정 생성 후 저장
     _currentUser = UserModel(
       id: 'guest_user',
       email: 'test@flownote.app',
@@ -148,6 +167,9 @@ class AuthProvider extends ChangeNotifier {
       businessAddress: '서울시 마포구 합정동 123-4 꽃향기빌딩 1층',
       phoneNumber: '02-1234-5678',
     );
+
+    // SharedPreferences에 저장 → 앱 재시작 후 자동 복원
+    await prefs.setString('user_data', jsonEncode(_currentUser!.toMap()));
 
     _isLoading = false;
     notifyListeners();
@@ -192,11 +214,9 @@ class AuthProvider extends ChangeNotifier {
       businessAddress: businessAddress,
       phoneNumber: phoneNumber,
     );
-    // guest 계정이 아닐 때만 저장
-    if (_currentUser!.id != 'guest_user') {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_data', jsonEncode(_currentUser!.toMap()));
-    }
+    // 모든 계정(게스트 포함) 저장
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_data', jsonEncode(_currentUser!.toMap()));
     notifyListeners();
   }
 }
