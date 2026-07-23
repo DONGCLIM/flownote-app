@@ -124,6 +124,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    // SharedPreferences에서도 삭제 (완전 로그아웃)
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_data');
     _currentUser = null;
     notifyListeners();
   }
